@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          ImageLoader相关总结 - 王木木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://www.mumukeji.com.cn/Android/android/2017-03-20-ImageLoader相关总结/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/article_header/article_bg.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Android, ImageLoader" title="Android, ImageLoader">Android, ImageLoader</a>
+                            
+                        </div>
+                        <h1>ImageLoader相关总结</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by 王木木 on
+                            2017-03-23
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">王木木</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2 id="使用指南">使用指南</h2>
+<ul>
+<li>Application中配置</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class YourApplication extends Application &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onCreate() &#123;</span><br><span class="line">        super.onCreate();</span><br><span class="line">        ImageLoaderConfiguration configuration = new ImageLoaderConfiguration.Builder(this)</span><br><span class="line">            // 添加你的配置需求</span><br><span class="line">            .build();</span><br><span class="line">        ImageLoader.getInstance().init(configuration);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">1.其中 configuration 表示ImageLoader的配置信息，可包括图片最大尺寸、线程池、缓存、下载器、解码器等等。</span><br><span class="line">2.init 方法初始化ImageLoaderEngine（任务分发器）等</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Manifest 配置</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;manifest&gt;</span><br><span class="line">    &lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;</span><br><span class="line">    &lt;uses-permission android:name=&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot; /&gt;</span><br><span class="line">    &lt;application</span><br><span class="line">        android:name=&quot;.YourApplication&quot;</span><br><span class="line">        …… &gt;</span><br><span class="line">        ……</span><br><span class="line">    &lt;/application&gt;</span><br><span class="line">&lt;/manifest&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>方法调用</li>
+</ul>
+<p>1.下载图片，解析为 Bitmap 并在 ImageView 中显示。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">imageLoader.displayImage(imageUri, imageView);</span><br></pre></td></tr></table></figure>
+<p>2.下载图片，解析为 Bitmap 传递给回调接口。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">imageLoader.loadImage(imageUri, new SimpleImageLoadingListener() &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) &#123;</span><br><span class="line">        // 图片处理</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="总体设计">总体设计</h2>
+<p><img src="/assets/images/android/imageloader_alldesign.png" alt="activity"></p>
+<h2 id="主要概念">主要概念</h2>
+<ul>
+<li>ImageLoaderEngine：任务分发器，负责分发LoadAndDisplayImageTask和ProcessAndDisplayImageTask给具体的线程池去执行</li>
+<li>ImageAware：显示图片的对象，可以是ImageView等</li>
+<li>ImageDownloader：图片下载器，负责从图片的各个来源获取输入流</li>
+<li>Cache：图片缓存，分为MemoryCache和DiskCache两部分</li>
+<li>MemoryCache：内存图片缓存，可向内存缓存缓存图片或从内存缓存读取图片</li>
+<li>DiskCache：本地图片缓存，可向本地磁盘缓存保存图片或从本地磁盘读取图片</li>
+<li>ImageDecoder：图片解码器，负责将图片输入流InputStream转换为Bitmap对象</li>
+<li>BitmapProcessor：图片处理器，负责从缓存读取或写入前对图片进行处理</li>
+<li>BitmapDisplayer：将Bitmap对象显示在相应的控件ImageAware上</li>
+<li>LoadAndDisplayImageTask：用于加载并显示图片的任务</li>
+<li>ProcessAndDisplayImageTask：用于处理并显示图片的任务,</li>
+<li>DisplayBitmapTask：用于显示图片的任务</li>
+</ul>
+<h2 id="流程图">流程图</h2>
+<p><img src="/assets/images/android/imageloader_flow.png" alt="activity"></p>
+<h2 id="imageloaderdisplayimage">ImageLoader:displayImage()</h2>
+<p><img src="/assets/images/android/imageloader_displayimage.png" alt="activity"></p>
+<h2 id="imageloaderconfigurationjava-可配置列表">ImageLoaderConfiguration.java 可配置列表</h2>
+<blockquote>
+<p>ImageLoader的配置信息，包括图片最大尺寸、线程池、缓存、下载器、解码器等等。<br>
+主要属性：</p>
+</blockquote>
+<ol>
+<li>Resources resources<br>
+程序本地资源访问器，用于加载DisplayImageOptions中设置的一些 App 中图片资源。</li>
+<li>int maxImageWidthForMemoryCache<br>
+内存缓存的图片最大宽度。</li>
+<li>int maxImageHeightForMemoryCache<br>
+内存缓存的图片最大高度。</li>
+<li>int maxImageWidthForDiskCache<br>
+磁盘缓存的图片最大宽度。</li>
+<li>int maxImageHeightForDiskCache<br>
+磁盘缓存的图片最大高度。</li>
+<li>BitmapProcessor processorForDiskCache<br>
+图片处理器，用于处理从磁盘缓存中读取到的图片。</li>
+<li>Executor taskExecutor<br>
+ImageLoaderEngine中用于执行从源获取图片任务的 Executor。</li>
+<li>Executor taskExecutorForCachedImages<br>
+ImageLoaderEngine中用于执行从缓存获取图片任务的 Executor。</li>
+<li>boolean customExecutor<br>
+用户是否自定义了上面的 taskExecutor。</li>
+<li>boolean customExecutorForCachedImages<br>
+用户是否自定义了上面的 taskExecutorForCachedImages。</li>
+<li>int threadPoolSize<br>
+上面两个默认线程池的核心池大小，即最大并发数。</li>
+<li>int threadPriority<br>
+上面两个默认线程池的线程优先级。</li>
+<li>QueueProcessingType tasksProcessingType<br>
+上面两个默认线程池的线程队列类型。目前只有 FIFO, LIFO 两种可供选择。</li>
+<li>MemoryCache memoryCache<br>
+图片内存缓存。</li>
+<li>DiskCache diskCache<br>
+图片磁盘缓存，一般放在 SD 卡。</li>
+<li>ImageDownloader downloader<br>
+图片下载器。</li>
+<li>ImageDecoder decoder<br>
+图片解码器，内部可使用我们常用的BitmapFactory.decode(…)将图片资源解码成Bitmap对象。</li>
+<li>DisplayImageOptions defaultDisplayImageOptions<br>
+图片显示的配置项。比如加载前、加载中、加载失败应该显示的占位图片，图片是否需要在磁盘缓存，是否需要在内存缓存等。</li>
+<li>ImageDownloader networkDeniedDownloader<br>
+不允许访问网络的图片下载器。</li>
+<li>ImageDownloader slowNetworkDownloader<br>
+慢网络情况下的图片下载器。</li>
+</ol>
+<h2 id="imageloader-loadanddisplayimagetask-过程">ImageLoader LoadAndDisplayImageTask 过程</h2>
+<p><img src="/assets/images/android/imageloader_loadanddisplay.png" alt="activity"></p>
+<h2 id="内存缓存体系">内存缓存体系</h2>
+<ul>
+<li>MemoryCache.java</li>
+</ul>
+<blockquote>
+<p>Bitmap 内存缓存接口，需要实现的接口包括 get(…)、put(…)、remove(…)、clear()、keys()。</p>
+</blockquote>
+<ul>
+<li>BaseMemoryCache.java</li>
+</ul>
+<blockquote>
+<p>实现了MemoryCache主要函数的抽象类，以 Map&gt; softMap 做为缓存池，利于虚拟机在内存不足时回收缓存对象。提供抽象函数：<br>
+<code>protected abstract Reference&lt;Bitmap&gt; createReference(Bitmap value)</code><br>
+表示根据 Bitmap 创建一个 Reference 做为缓存对象。Reference 可以是 WeakReference、SoftReference 等。</p>
+</blockquote>
+<ul>
+<li>WeakMemoryCache.java</li>
+</ul>
+<blockquote>
+<p>以WeakReference<bitmap>做为缓存 value 的内存缓存，实现了BaseMemoryCache。<br>
+实现了BaseMemoryCache的createReference(Bitmap value)函数，直接返回一个new WeakReference<bitmap>(value)做为缓存 value</bitmap></bitmap></p>
+</blockquote>
+<ul>
+<li>LimitedMemoryCache.java</li>
+</ul>
+<blockquote>
+<p>限制总字节大小的内存缓存，继承自BaseMemoryCache的抽象类。<br>
+会在 put(…) 函数中判断总体大小是否超出了上限，是则循环删除缓存对象直到小于上限。删除顺序由抽象函数<br>
+<code>protected abstract Bitmap removeNext()</code><br>
+决定。<br>
+抽象函数<code>protected abstract int getSize(Bitmap value)</code><br>
+表示每个元素大小。</p>
+</blockquote>
+<ul>
+<li>LargestLimitedMemoryCache.java</li>
+</ul>
+<blockquote>
+<p>限制总字节大小的内存缓存，会在缓存满时优先删除 size 最大的元素，继承自LimitedMemoryCache。<br>
+实现了LimitedMemoryCache缓存removeNext()函数，总是返回当前缓存中 size 最大的元素。</p>
+</blockquote>
+<ul>
+<li>UsingFreqLimitedMemoryCache.java</li>
+</ul>
+<blockquote>
+<p>限制总字节大小的内存缓存，会在缓存满时优先删除使用次数最少的元素，继承自LimitedMemoryCache。<br>
+实现了LimitedMemoryCache缓存removeNext()函数，总是返回当前缓存中使用次数最少的元素。</p>
+</blockquote>
+<ul>
+<li>LRULimitedMemoryCache.java</li>
+</ul>
+<blockquote>
+<p>限制总字节大小的内存缓存，会在缓存满时优先删除最近最少使用的元素，继承自LimitedMemoryCache。<br>
+通过new LinkedHashMap&lt;String, Bitmap&gt;(10, 1.1f, true)作为缓存池。LinkedHashMap 第三个参数表示是否需要根据访问顺序(accessOrder)排序，true 表示根据accessOrder排序，最近访问的跟最新加入的一样放到最后面，false 表示根据插入顺序排序。这里为 true 且缓存满时始终删除第一个元素，即始终删除最近最少访问的元素。<br>
+实现了LimitedMemoryCache缓存removeNext()函数，总是返回第一个元素，即最近最少使用的元素。</p>
+</blockquote>
+<ul>
+<li>FIFOLimitedMemoryCache.java</li>
+</ul>
+<blockquote>
+<p>限制总字节大小的内存缓存，会在缓存满时优先删除先进入缓存的元素，继承自LimitedMemoryCache。<br>
+实现了LimitedMemoryCache缓存removeNext()函数，总是返回最先进入缓存的元素。</p>
+</blockquote>
+<blockquote>
+<p>以上所有LimitedMemoryCache子类都有个问题，就是 Bitmap 虽然通过WeakReference<bitmap>包装，但实际根本不会被虚拟机回收，因为他们子类中同时都保留了 Bitmap 的强引用。大都是 UIL 早期实现的版本，不推荐使用。</bitmap></p>
+</blockquote>
+<ul>
+<li>LruMemoryCache.java</li>
+</ul>
+<blockquote>
+<p>限制总字节大小的内存缓存，会在缓存满时优先删除最近最少使用的元素，实现了MemoryCache。LRU(Least Recently Used) 为最近最少使用算法。</p>
+</blockquote>
+<blockquote>
+<p>以new LinkedHashMap&lt;String, Bitmap&gt;(0, 0.75f, true)作为缓存池。LinkedHashMap 第三个参数表示是否需要根据访问顺序(accessOrder)排序，true 表示根据accessOrder排序，最近访问的跟最新加入的一样放到最后面，false 表示根据插入顺序排序。这里为 true 且缓存满时始终删除第一个元素，即始终删除最近最少访问的元素。</p>
+</blockquote>
+<blockquote>
+<p>在put(…)函数中通过trimToSize(int maxSize)函数判断总体大小是否超出了上限，是则删除第缓存池中第一个元素，即最近最少使用的元素，直到总体大小小于上限。</p>
+</blockquote>
+<blockquote>
+<p>LruMemoryCache功能上与LRULimitedMemoryCache类似，不过在实现上更加优雅。用简单的实现接口方式，而不是不断继承的方式。</p>
+</blockquote>
+<ul>
+<li>LimitedAgeMemoryCache.java</li>
+</ul>
+<blockquote>
+<p>限制了对象最长存活周期的内存缓存。<br>
+MemoryCache的装饰者，相当于为MemoryCache添加了一个特性。以一个MemoryCache内存缓存和一个 maxAge 做为构造函数入参。在 get(…) 时判断如果对象存活时间已经超过设置的最长时间，则删除。</p>
+</blockquote>
+<ul>
+<li>FuzzyKeyMemoryCache.java</li>
+</ul>
+<blockquote>
+<p>可以将某些原本不同的 key 看做相等，在 put 时删除这些相等的 key。<br>
+MemoryCache的装饰者，相当于为MemoryCache添加了一个特性。以一个MemoryCache内存缓存和一个 keyComparator 做为构造函数入参。在 put(…) 时判断如果 key 与缓存中已有 key 经过Comparator比较后相等，则删除之前的元素。</p>
+</blockquote>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/Java/java/2017-03-20-Java强软弱虚引用/" data-toggle="tooltip" data-placement="top" title="Java中的强、软、弱、虚引用">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Android, ImageLoader" title="Android, ImageLoader">Android, ImageLoader</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="http://blog.csdn.net/huwh_" target="_blank">CSDN Blog 胡伟煌</a></li>
+                    
+                        <li><a href="http://dockone.io/people/胡伟煌" target="_blank">DockOne 胡伟煌</a></li>
+                    
+                        <li><a href="https://yq.aliyun.com/u/huweihuang" target="_blank">阿里云栖社区 胡伟煌</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/王木木">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 王木木 2019 
+                    <br>
+                    Theme by <a href="http://beantech.org">BeanTech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="http://www.huweihuang.com">胡伟煌</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huweihuang&repo=hexo-theme-huweihuang&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://www.mumukeji.com.cn/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://www.mumukeji.com.cn/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
